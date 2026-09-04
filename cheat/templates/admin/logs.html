@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0a0a0a;font-family:'Courier New',monospace;color:#00ff41}
+        .sidebar{position:fixed;left:0;top:0;width:220px;height:100%;background:#111;border-right:1px solid #222;padding:20px;overflow-y:auto}
+        .logo{font-size:22px;font-weight:bold;padding:15px 0 20px;border-bottom:1px solid #222;margin-bottom:20px}
+        .sidebar a{display:block;padding:12px 16px;color:#666;text-decoration:none;border-radius:6px;margin-bottom:4px;transition:0.3s;font-size:14px}
+        .sidebar a:hover,.sidebar a.active{color:#00ff41;background:#1a1a1a}
+        .sidebar a.logout{color:#ff0040;margin-top:30px;border-top:1px solid #222;padding-top:20px}
+        .main{margin-left:220px;padding:30px}
+        table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
+        th,td{padding:10px;text-align:left;border-bottom:1px solid #222}
+        th{color:#666;font-size:10px;text-transform:uppercase;letter-spacing:1px}
+        td{color:#888}
+        .status-200{color:#00ff41}
+        .status-401{color:#ff0040}
+        .status-429{color:#ffaa00}
+        .status-500{color:#ff0040}
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">⚡ FF ADMIN</div>
+    <a href="/admin/dashboard">📊 Dashboard</a>
+    <a href="/admin/keys">🔑 Keys</a>
+    <a href="/admin/users">👥 Users</a>
+    <a href="/admin/logs" class="active">📝 Logs</a>
+    <a href="/admin/features">⚙️ Features</a>
+    <a href="/admin/settings">🔧 Settings</a>
+    <a href="/admin/logout" class="logout">🚪 Logout</a>
+</div>
+<div class="main">
+    <h1>📝 Proxy Logs</h1>
+    <table>
+        <thead><tr><th>Time</th><th>IP</th><th>License</th><th>Endpoint</th><th>Method</th><th>Status</th><th>ms</th></tr></thead>
+        <tbody>
+        {% for log in logs %}
+        <tr>
+            <td style="color:#666;font-size:10px">{{ log.timestamp }}</td>
+            <td>{{ log.ip_address }}</td>
+            <td style="font-size:10px;color:#666">{{ log.license_key[:16] }}...</td>
+            <td style="color:#888">{{ log.endpoint[:30] }}</td>
+            <td>{{ log.method }}</td>
+            <td class="status-{{ log.status_code }}">{{ log.status_code }}</td>
+            <td>{{ log.response_time }}ms</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

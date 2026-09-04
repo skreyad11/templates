@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0a0a0a;font-family:'Courier New',monospace;display:flex;justify-content:center;align-items:center;height:100vh;color:#00ff41}
+        .container{background:#111;padding:50px;border-radius:12px;border:1px solid #00ff41;width:420px;box-shadow:0 0 40px rgba(0,255,65,0.1)}
+        h1{text-align:center;font-size:28px;margin-bottom:10px;letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,65,0.3)}
+        .sub{text-align:center;color:#666;font-size:14px;margin-bottom:30px}
+        input{width:100%;padding:14px;background:#0a0a0a;border:1px solid #222;color:#00ff41;border-radius:6px;margin:10px 0;font-size:16px;transition:0.3s}
+        input:focus{outline:none;border-color:#00ff41;box-shadow:0 0 15px rgba(0,255,65,0.1)}
+        button{width:100%;padding:14px;background:#00ff41;color:#0a0a0a;border:none;border-radius:6px;font-weight:bold;cursor:pointer;font-size:16px;transition:0.3s;margin-top:10px}
+        button:hover{background:#00cc33;box-shadow:0 0 30px rgba(0,255,65,0.3)}
+        .error{color:#ff0040;text-align:center;margin-top:15px;font-size:14px}
+        .footer{text-align:center;color:#333;font-size:12px;margin-top:20px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ FF ADMIN</h1>
+    <div class="sub">Proxy Management System v2.0</div>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">🔓 ACCESS</button>
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    </form>
+    <div class="footer">OB54 • Secure Connection</div>
+</div>
+</body>
+</html>
