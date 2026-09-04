@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0a0a0a;font-family:'Courier New',monospace;color:#00ff41;padding:20px}
+        .container{max-width:900px;margin:0 auto}
+        header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid #222;flex-wrap:wrap;gap:10px}
+        .license-info{color:#666;font-size:13px}
+        .license-info span{color:#00ff41}
+        .btn-logout{color:#ff0040;text-decoration:none;padding:8px 20px;border:1px solid #ff0040;border-radius:6px;transition:0.3s;font-size:14px}
+        .btn-logout:hover{background:#ff0040;color:#0a0a0a}
+        .features-section{margin:30px 0}
+        .features-section h3{font-size:20px;margin-bottom:5px}
+        .features-section .sub{color:#666;font-size:14px;margin-bottom:20px}
+        .toggle-item{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#111;border-radius:8px;margin:8px 0;border:1px solid #1a1a1a;transition:0.3s}
+        .toggle-item:hover{border-color:#333}
+        .toggle-item .name{font-size:15px;font-weight:bold}
+        .toggle-item .desc{color:#666;font-size:12px;margin-top:3px}
+        .switch{width:52px;height:28px;background:#222;border-radius:14px;cursor:pointer;position:relative;transition:0.3s;flex-shrink:0}
+        .switch.active{background:#00ff41}
+        .switch::after{content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;top:3px;left:3px;transition:0.3s}
+        .switch.active::after{left:27px;background:#0a0a0a}
+        .config-section{background:#111;padding:24px;border-radius:10px;margin-top:30px;border:1px solid #222}
+        .config-section h3{margin-bottom:10px}
+        .config-section code{display:block;background:#0a0a0a;padding:16px;border-radius:6px;font-size:12px;color:#888;overflow-x:auto;white-space:pre-wrap;word-break:break-all;border:1px solid #1a1a1a;max-height:300px;overflow-y:auto}
+        .btn-copy{padding:10px 24px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:12px;transition:0.3s;font-size:14px}
+        .btn-copy:hover{background:#444}
+        .btn-download{padding:10px 24px;background:#00ff41;color:#0a0a0a;border:none;border-radius:6px;cursor:pointer;margin-top:12px;transition:0.3s;font-size:14px;font-weight:bold;margin-left:10px}
+        .btn-download:hover{background:#00cc33}
+        .actions{display:flex;flex-wrap:wrap;gap:10px}
+        .status-badge{display:inline-block;padding:3px 12px;border-radius:12px;font-size:11px;font-weight:bold}
+        .status-active{background:#00ff41;color:#0a0a0a}
+        .status-expired{background:#ff0040;color:#fff}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h2>🔥𝗭𝗫 𝗠𝗔𝗠𝗨𝗡 𝗢𝗙𝗖</h2>
+            <div class="license-info">
+                License: <span>{{ license_key }}</span> &nbsp;|&nbsp; Tier: <span>{{ session.tier|upper }}</span>
+                &nbsp;|&nbsp; Expires: <span>{{ session.expiry[:10] }}</span>
+            </div>
+        </div>
+        <a href="/user/logout" class="btn-logout">🚪 Logout</a>
+    </header>
+
+    <div class="features-section">
+        <h3>⚙️ Feature Toggles</h3>
+        <div class="sub">Enable/disable features for your session</div>
+
+        {% for feature, enabled in features.items() %}
+        <div class="toggle-item">
+            <div>
+                <div class="name">{{ feature|replace('_',' ')|title }}</div>
+                <div class="desc">
+                    {% if feature == 'hs_neck' %}Headshot → Neck mapping{% elif feature == 'hs_chest' %}Headshot → Chest mapping{% elif feature == 'zigzag' %}PC-style zigzag movement{% elif feature == 'backjump' %}Instant backward jump{% elif feature == 'noswap' %}No weapon swap delay{% elif feature == 'bypass' %}Anti-ban bypass{% elif feature == 'speed_hack' %}Movement speed multiplier{% elif feature == 'high_jump' %}Increased jump height{% endif %}
+                </div>
+            </div>
+            <div class="switch {% if enabled %}active{% endif %}" data-feature="{{ feature }}" onclick="toggleFeature(this)"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="config-section">
+        <h3>📋 localconfig.json</h3>
+        <p style="color:#666;font-size:13px;margin-bottom:12px">Download or copy this file to your Free Fire directory</p>
+        <code id="configCode">Loading...</code>
+        <div class="actions">
+            <button class="btn-copy" onclick="copyConfig()">📄 Copy</button>
+            <button class="btn-download" onclick="downloadConfig()">⬇️ Download</button>
+        </div>
+        <div style="margin-top:15px;color:#444;font-size:12px;border-top:1px solid #1a1a1a;padding-top:12px">
+            📂 Place in: <span style="color:#666">/sdcard/Android/data/com.dts.freefireth/files/</span>
+        </div>
+    </div>
+</div>
+
+<script>
+async function toggleFeature(el) {
+    const feature = el.dataset.feature;
+    const enabled = !el.classList.contains('active');
+
+    const res = await fetch('/api/user/features/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({feature, enabled})
+    });
+
+    if (res.ok) {
+        el.classList.toggle('active');
+        updateConfig();
+    }
+}
+
+async function updateConfig() {
+    const res = await fetch('/api/user/features');
+    const features = await res.json();
+    const host = window.location.hostname;
+    const config = {
+        resetGuest: true,
+        verAddr: `https://${host}/proxy/`,
+        proxy: {
+            enabled: true,
+            host: host,
+            port: 443,
+            ssl: true
+        },
+        features: features,
+        license: '{{ license_key }}',
+        version: 'OB54'
+    };
+    document.getElementById('configCode').textContent = JSON.stringify(config, null, 4);
+}
+
+function copyConfig() {
+    const code = document.getElementById('configCode').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Config copied to clipboard!');
+    });
+}
+
+function downloadConfig() {
+    const code = document.getElementById('configCode').textContent;
+    const blob = new Blob([code], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'localconfig.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Load config on page load
+updateConfig();
+</script>
+</body>
+</html>

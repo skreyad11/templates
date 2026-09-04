@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activate License</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0a0a0a;font-family:'Courier New',monospace;color:#00ff41;display:flex;justify-content:center;align-items:center;height:100vh}
+        .container{background:#111;padding:50px;border-radius:12px;border:1px solid #00ff41;width:440px;text-align:center;box-shadow:0 0 40px rgba(0,255,65,0.1)}
+        h1{font-size:28px;margin-bottom:10px}
+        .sub{color:#666;font-size:14px;margin-bottom:30px}
+        input{width:100%;padding:14px;background:#0a0a0a;border:1px solid #222;color:#00ff41;border-radius:6px;margin:10px 0;font-size:16px;transition:0.3s}
+        input:focus{outline:none;border-color:#00ff41;box-shadow:0 0 15px rgba(0,255,65,0.1)}
+        button{width:100%;padding:14px;background:#00ff41;color:#0a0a0a;border:none;border-radius:6px;font-weight:bold;cursor:pointer;font-size:16px;transition:0.3s;margin-top:10px}
+        button:hover{background:#00cc33;box-shadow:0 0 30px rgba(0,255,65,0.3)}
+        .error{color:#ff0040;margin-top:15px;font-size:14px}
+        .back{display:block;margin-top:20px;color:#666;font-size:13px;text-decoration:none}
+        .back:hover{color:#00ff41}
+        .hint{color:#444;font-size:12px;margin-top:8px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔑 𝗭𝗫 𝗠𝗔𝗠𝗨𝗡 𝗢𝗙𝗖</h1>
+    <div class="sub">Enter your license key to activate</div>
+    <form method="POST">
+        <input type="text" name="license_key" placeholder="e.g. PREMIUM-XXXX-XXXX-XXXX" required>
+        <input type="text" name="device_id" placeholder="Device ID (optional)">
+        <button type="submit">✅ Activate</button>
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    </form>
+    <a href="/" class="back">← Back to home</a>
+    <div class="hint">Don't have a license? Contact support</div>
+</div>
+</body>
+</html>
